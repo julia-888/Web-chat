@@ -5,9 +5,9 @@ import ReactDOM from 'react-dom/client';
 import TextField from '@mui/material/TextField';
 import { Sheet } from '@mui/joy';
 import Card from '@mui/material/Card';
-import { Button } from '@mui/material';
+import { Button, Chip, List, ListItem, ListItemText } from '@mui/material';
 import { useEffect, useState } from "react";
-import Message from './Message';
+// import Message from './Message';
 import { json } from 'stream/consumers';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
@@ -47,7 +47,7 @@ export default function Chat({setEnteredStatus, setUsername, username}: props) {
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
     const s = String(now.getSeconds()).padStart(2, '0');
-    const currentTime = h + ' : ' + m + ' : ' + s;
+    const currentTime = h + ':' + m + ':' + s;
     const dataForSending = {
       text: msgText,
       name: username,
@@ -63,22 +63,37 @@ export default function Chat({setEnteredStatus, setUsername, username}: props) {
     <ChatSheet>
       <BackButton variant="outlined" onClick={() => {setEnteredStatus(false); setUsername("")}}>Назад</BackButton>
       <ChatMessages>
-        <ul>
+        <List sx={{display: 'flex', flexDirection: 'column'}}>
           {
-          messages.map( message => {return(<li>
-            <label>{message.sender_name}</label>
-            <span>      {message.text_of_message}     </span>
-            <label>{message.time_of_sending}</label>
-          </li>)})
+            messages.map( (message) => {
+              return(
+                username == message.sender_name ?
+                  (<ListItem sx={{justifyContent: 'flex-end', textAlign: 'right'}}>
+                  <div>
+                    <div>
+                      <Chip label={message.text_of_message} />
+                    </div>
+                    <label style={{fontSize: '10px', marginLeft: '8px'}}>{message.sender_name + " " + message.time_of_sending}</label>
+                  </div>
+                </ListItem>
+              ): (
+                <ListItem>
+                  <div>
+                    <div>
+                      <Chip label={message.text_of_message} />
+                    </div>
+                    <label style={{fontSize: '10px', marginLeft: '10px'}}>{message.sender_name + " " + message.time_of_sending}</label>
+                  </div>
+                </ListItem>
+              ))
+          })
           }
-            
-        
-        </ul>
+        </List>
       </ChatMessages>
         <ChatItems>
-          <ChatInput onChange={(e) => {setMsgText(e.target.value)}}></ChatInput>
+          <ChatInput multiline maxRows={3} value={msgText} onChange={(e) => {setMsgText(e.target.value)}}></ChatInput>
           <ChatButton variant='contained'
-            onClick={() => {sendData()}}
+            onClick={() => { if (msgText.length !== 0) {sendData(); setMsgText("");}}}
           >Отправить</ChatButton>
         </ChatItems>
       </ChatSheet>
@@ -91,7 +106,7 @@ const ChatSheet = styled(Card)({
   width: '50vw',
   border: 'solid grey 1px',
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
 });
 
 const BackButton = styled(Button)({
@@ -101,10 +116,11 @@ const BackButton = styled(Button)({
 const ChatMessages = styled(Sheet)({
   width: '50vw',
   height: '70vh',
+  overflowY: 'scroll',
 })
 
 const ChatItems = styled(Sheet)({
-  borderTop: 'dashed lime 4px',
+  borderTop: 'solid teal 4px',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -113,6 +129,7 @@ const ChatItems = styled(Sheet)({
 
 const ChatInput = styled(TextField)({
   width: '37vw',
+  
 })
 
 const ChatButton = styled(Button)({
