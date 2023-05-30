@@ -3,55 +3,42 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
+import Sheet from '@mui/joy/Sheet';
+import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import { FormLabel, Typography } from '@mui/material';
-
-import styled from 'styled-components';
 
 
 type props = {
   setEnteredStatus: (status: boolean) => void;
   setUsername: (name: string) => void;
+  username: string;
 }
 
-export default function EnterCard({setEnteredStatus, setUsername}: props) {
+export default function EnterCard({setEnteredStatus, setUsername, username}: props) {
   return (
-    <EnterPage>
-      <EnterCardDiv>
-        <EnterCardHeader>Как тебя зовут?</EnterCardHeader>
-        <EnterInput onChange={(e) => {setUsername(e.target.value)}}></EnterInput>
-        <EnterButton onClick={() => setEnteredStatus(true)}>Войти!</EnterButton>
-      </EnterCardDiv>
-    </EnterPage>
+    <EnterSheet>
+      <EnterCardDiv variant="outlined" >
+        <Typography variant="h5" component="div">Как тебя зовут?</Typography>
+        <TextField required id="standard-basic" label="Имя" variant="standard" onChange={(e) => {setUsername(e.target.value)}} />
+        <Button variant="contained" sx={{ marginTop: '30px'}} onClick={() => username.length !== 0 && setEnteredStatus(true)}>Войти в чат</Button>
+      </EnterCardDiv >
+    </EnterSheet>
   );
 }
 
-const EnterPage = styled.div`
-  width: 98vw;
-  height: 96vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-`
+const EnterSheet = styled(Sheet)({
+  width: '98vw',
+  height: '96vh',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center'
+});
 
-const EnterCardDiv =styled.div`
-  width: 300px;
-  height: 200px;
-  margin: auto;
-  border: solid grey 2px;
-  text-align: center;
-`
-
-const EnterInput = styled.input`
-  
-`
-
-const EnterCardHeader = styled.h1`
-  
-`
-
-const EnterButton = styled.button`
-  
-`
+const EnterCardDiv = styled(Card) ({
+  width: 300,
+  textAlign: 'center', 
+  border: 'solid black 1px', 
+  padding: '30px 5px'
+})

@@ -3,15 +3,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import TextField from '@mui/material/TextField';
+import { Sheet } from '@mui/joy';
+import Card from '@mui/material/Card';
 import { Button } from '@mui/material';
 import { useEffect, useState } from "react";
 import Message from './Message';
 import { json } from 'stream/consumers';
-import styled from 'styled-components';
+import { styled } from '@mui/material/styles';
 import axios from 'axios';
 
 type props = {
   setEnteredStatus: (status: boolean) => void;
+  setUsername: (name: string) => void;
   username: string;
 }
 
@@ -22,7 +25,7 @@ interface IMessages {
   time_of_sending: string,
 }
 
-export default function Chat({setEnteredStatus, username}: props) {
+export default function Chat({setEnteredStatus, setUsername, username}: props) {
   //объект с текущей датой и временем
   const now = new Date();
   //набираемый текст сообщения
@@ -57,8 +60,8 @@ export default function Chat({setEnteredStatus, username}: props) {
   }
   
   return (
-    <ChatFrame>
-      <BackButton onClick={() => {setEnteredStatus(false); console.log(messages)}}>Назад!</BackButton>
+    <ChatSheet>
+      <BackButton variant="outlined" onClick={() => {setEnteredStatus(false); setUsername("")}}>Назад</BackButton>
       <ChatMessages>
         <ul>
           {
@@ -74,43 +77,44 @@ export default function Chat({setEnteredStatus, username}: props) {
       </ChatMessages>
         <ChatItems>
           <ChatInput onChange={(e) => {setMsgText(e.target.value)}}></ChatInput>
-          <ChatButton
+          <ChatButton variant='contained'
             onClick={() => {sendData()}}
-          >Отправить!</ChatButton>
+          >Отправить</ChatButton>
         </ChatItems>
-      </ChatFrame>
+      </ChatSheet>
   );
 }
 
-const ChatFrame = styled.div`
-  margin: auto;
-  height: 85vh;
-  width: 50vw;
-  border: solid black 2px;
-  display: flex;
-  flex-direction: column;
-`
+const ChatSheet = styled(Card)({
+  margin: 'auto',
+  height: '85vh',
+  width: '50vw',
+  border: 'solid grey 1px',
+  display: 'flex',
+  flexDirection: 'column'
+});
 
-const BackButton = styled.button`
-  height: 5vh;
-`
+const BackButton = styled(Button)({
+  height: '5vh'
+})
 
-const ChatMessages = styled.div`
-  width: 50vw;
-  height: 70vh;
-  border: solid blue 1px;
-`
+const ChatMessages = styled(Sheet)({
+  width: '50vw',
+  height: '70vh',
+})
 
-const ChatItems = styled.div`
-  height: 10vh;
-  border: solid lime 3px;
-  justify-self: flex-end;
-`
+const ChatItems = styled(Sheet)({
+  borderTop: 'dashed lime 4px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '30px',
+})
 
-const ChatInput = styled.input`
-  
-`
+const ChatInput = styled(TextField)({
+  width: '37vw',
+})
 
-const ChatButton = styled.button`
-  
-`
+const ChatButton = styled(Button)({
+  marginLeft: '20px',
+})

@@ -12,8 +12,8 @@ function App() {
   const [username, setUsername] = useState("");
 
   return ( enteredStatus ? 
-    <Chat setEnteredStatus={setEnteredStatus} username={username} /> :
-    <EnterCard setEnteredStatus={setEnteredStatus} setUsername={setUsername} />
+    <Chat setEnteredStatus={setEnteredStatus} setUsername={setUsername} username={username} /> :
+    <EnterCard setEnteredStatus={setEnteredStatus} setUsername={setUsername} username={username} />
   );
   //если enteredStatus = false, отображается карточка входа; если enteredStatus = true, отображается страница чата
   }; 
