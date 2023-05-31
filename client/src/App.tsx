@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { response } from 'express';
 import EnterCard from './components/EnterCard';
 import Chat from './components/Chat'
-// import { useAppSelector } from './redux-features/hooks';
 
 
 function App() {
@@ -12,7 +11,7 @@ function App() {
   const [username, setUsername] = useState("");
 
   return ( enteredStatus ? 
-    <Chat setEnteredStatus={setEnteredStatus} setUsername={setUsername} username={username} /> :
+    <Chat setEnteredStatus={setEnteredStatus} setUsername={setUsername} username={username} enteredStatus={enteredStatus} /> :
     <EnterCard setEnteredStatus={setEnteredStatus} setUsername={setUsername} username={username} />
   );
   //если enteredStatus = false, отображается карточка входа; если enteredStatus = true, отображается страница чата

@@ -21,7 +21,9 @@ export default function EnterCard({setEnteredStatus, setUsername, username}: pro
       <EnterCardDiv variant="outlined" >
         <Typography variant="h5" component="div">Как тебя зовут?</Typography>
         <TextField required id="standard-basic" label="Имя" variant="standard" multiline maxRows={2} value={username} onChange={(e) => {setUsername(e.target.value.slice(0,20))}} />
-        <Button variant="contained" sx={{ marginTop: '30px'}} onClick={() => username.length !== 0 && setEnteredStatus(true)}>Войти в чат</Button>
+        <Button variant="contained" sx={{ marginTop: '30px'}} 
+                onClick={() => {username.length !== 0 && setEnteredStatus(true);
+        }}>Войти в чат</Button>
       </EnterCardDiv >
     </EnterSheet>
   );

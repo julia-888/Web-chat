@@ -7,15 +7,14 @@ import { Sheet } from '@mui/joy';
 import Card from '@mui/material/Card';
 import { Button, Chip, List, ListItem, ListItemText } from '@mui/material';
 import { useEffect, useState } from "react";
-// import Message from './Message';
-import { json } from 'stream/consumers';
 import { styled } from '@mui/material/styles';
-import axios from 'axios';
+import {io} from 'socket.io-client';
 
 type props = {
   setEnteredStatus: (status: boolean) => void;
   setUsername: (name: string) => void;
   username: string;
+  enteredStatus: boolean;
 }
 
 interface IMessages {
@@ -25,23 +24,15 @@ interface IMessages {
   time_of_sending: string,
 }
 
-export default function Chat({setEnteredStatus, setUsername, username}: props) {
+const socket = io(`ws://localhost:5000`, { transports: ["websocket"] });
+
+export default function Chat({setEnteredStatus, setUsername, username, enteredStatus}: props) {
   //объект с текущей датой и временем
   const now = new Date();
   //набираемый текст сообщения
   const [msgText, setMsgText] = useState('');
   //все сообщения
   const [messages, setMessages] = useState<IMessages[]>([]);
-
-  //get-запросы
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/messages")
-      .then(data => {
-        setMessages(data.data);
-      })
-      .catch((err) => {console.log(err)})
-  }, []);
 
   function sendData() {
     const h = String(now.getHours()).padStart(2, '0');
@@ -53,17 +44,32 @@ export default function Chat({setEnteredStatus, setUsername, username}: props) {
       name: username,
       time: currentTime
     }
-    axios
-    .put("http://localhost:5000/sendMessage", {dataForSending})
-    .then(data => { setMessages(data.data); });
-            
+
+    socket.emit('chat', {name: username, text: msgText, time: currentTime});
+    setMsgText('');            
   }
+
+  useEffect(() => {
+    socket.on("chat", (payload: IMessages[]) => {
+      console.log(payload);
+      setMessages(payload);
+    });
+    socket.on("first", (payload: IMessages[]) => {
+      console.log(payload);
+      setMessages(payload);
+    });
+  })
+
+  useEffect(() => {
+    socket.emit('first', "payload");
+  }, [enteredStatus])
   
+
   return (
     <ChatSheet>
       <BackButton variant="outlined" onClick={() => {setEnteredStatus(false); setUsername("")}}>Назад</BackButton>
-      <ChatMessages>
-        <List sx={{display: 'flex', flexDirection: 'column'}}>
+      <ChatMessages id="msgFrame">
+        <List sx={{display: 'flex', flexDirection: 'column-reverse'}}>
           {
             messages.map( (message) => {
               return(
@@ -71,16 +77,32 @@ export default function Chat({setEnteredStatus, setUsername, username}: props) {
                   (<ListItem sx={{justifyContent: 'flex-end', textAlign: 'right'}}>
                   <div>
                     <div>
-                      <Chip label={message.text_of_message} />
+                      <Chip label={message.text_of_message} sx={{
+          height: 'auto',
+          padding: '8px 0',
+          '& .MuiChip-label': {
+            overflowWrap: 'anywhere',
+            display: 'block',
+            whiteSpace: 'normal',
+            maxWidth: '350px',
+          }}} />
                     </div>
-                    <label style={{fontSize: '10px', marginLeft: '8px'}}>{message.sender_name + " " + message.time_of_sending}</label>
+                    <label style={{fontSize: '10px', marginRight: '8px'}}>{message.time_of_sending}</label>
                   </div>
                 </ListItem>
               ): (
                 <ListItem>
                   <div>
                     <div>
-                      <Chip label={message.text_of_message} />
+                      <Chip label={message.text_of_message} sx={{
+          height: 'auto',
+          padding: '8px 0',
+          '& .MuiChip-label': {
+            overflowWrap: 'anywhere',
+            display: 'block',
+            whiteSpace: 'normal',
+            maxWidth: '350px',
+          }}} />
                     </div>
                     <label style={{fontSize: '10px', marginLeft: '10px'}}>{message.sender_name + " " + message.time_of_sending}</label>
                   </div>
