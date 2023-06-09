@@ -7,17 +7,14 @@ import { Sheet } from '@mui/joy';
 import Card from '@mui/material/Card';
 import { Button, Chip, List, ListItem, ListItemText } from '@mui/material';
 import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from '../redux-features/hooks';
 import { styled } from '@mui/material/styles';
+import { loadMessages } from '../redux-features/messagesSlice';
+import { enter, changeUsername } from '../redux-features/usernameSlice';
 import {io} from 'socket.io-client';
 
-type props = {
-  setEnteredStatus: (status: boolean) => void;
-  setUsername: (name: string) => void;
-  username: string;
-  enteredStatus: boolean;
-}
 
-interface IMessages {
+export interface IMessages {
   id_of_message: number,
   text_of_message: string,
   sender_name: string,
@@ -26,25 +23,24 @@ interface IMessages {
 
 const socket = io(`ws://localhost:5000`, { transports: ["websocket"] });
 
-export default function Chat({setEnteredStatus, setUsername, username, enteredStatus}: props) {
+export default function Chat() {
+  //создание типизированных селекторов и диспатча
+  const username = useAppSelector(state => state.username.value);
+  const messages = useAppSelector(state => state.messages.value);
+  const enteredStatus = useAppSelector(state => state.username.enteredStatus);
+  const dispatch = useAppDispatch();
+
+
   //объект с текущей датой и временем
   const now = new Date();
   //набираемый текст сообщения
   const [msgText, setMsgText] = useState('');
-  //все сообщения
-  const [messages, setMessages] = useState<IMessages[]>([]);
 
   function sendData() {
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
     const s = String(now.getSeconds()).padStart(2, '0');
     const currentTime = h + ':' + m + ':' + s;
-    const dataForSending = {
-      text: msgText,
-      name: username,
-      time: currentTime
-    }
-
     socket.emit('chat', {name: username, text: msgText, time: currentTime});
     setMsgText('');            
   }
@@ -52,11 +48,13 @@ export default function Chat({setEnteredStatus, setUsername, username, enteredSt
   useEffect(() => {
     socket.on("chat", (payload: IMessages[]) => {
       console.log(payload);
-      setMessages(payload);
+      dispatch(loadMessages(payload));
+      //Запрос на сервер
+      
     });
     socket.on("first", (payload: IMessages[]) => {
       console.log(payload);
-      setMessages(payload);
+      dispatch(loadMessages(payload));
     });
   })
 
@@ -67,7 +65,7 @@ export default function Chat({setEnteredStatus, setUsername, username, enteredSt
 
   return (
     <ChatSheet>
-      <BackButton variant="outlined" onClick={() => {setEnteredStatus(false); setUsername("")}}>Назад</BackButton>
+      <BackButton variant="outlined" onClick={() => {dispatch(enter(false)); dispatch(changeUsername(""));}}>Назад</BackButton>
       <ChatMessages id="msgFrame">
         <List sx={{display: 'flex', flexDirection: 'column-reverse'}}>
           {

@@ -1,18 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
-import { useEffect, useState } from "react";
-import { response } from 'express';
 import EnterCard from './components/EnterCard';
-import Chat from './components/Chat'
+import Chat from './components/Chat';
+import { useAppSelector } from './redux-features/hooks';
 
 
 function App() {
-  const [enteredStatus, setEnteredStatus] = useState(false);
-  const [username, setUsername] = useState("");
-
-  return ( enteredStatus ? 
-    <Chat setEnteredStatus={setEnteredStatus} setUsername={setUsername} username={username} enteredStatus={enteredStatus} /> :
-    <EnterCard setEnteredStatus={setEnteredStatus} setUsername={setUsername} username={username} />
+  const username = useAppSelector(state => state.username);
+  
+  return ( username.enteredStatus ? 
+    <Chat /> :
+    <EnterCard />
   );
   //если enteredStatus = false, отображается карточка входа; если enteredStatus = true, отображается страница чата
   }; 

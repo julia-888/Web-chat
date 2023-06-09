@@ -6,23 +6,21 @@ import Card from '@mui/material/Card';
 import Sheet from '@mui/joy/Sheet';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
-import { FormLabel, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import { useAppDispatch, useAppSelector } from '../redux-features/hooks';
+import { enter, changeUsername } from '../redux-features/usernameSlice';
 
+export default function EnterCard() {
+  const username = useAppSelector(state => state.username);
+  const dispatch = useAppDispatch();
 
-type props = {
-  setEnteredStatus: (status: boolean) => void;
-  setUsername: (name: string) => void;
-  username: string;
-}
-
-export default function EnterCard({setEnteredStatus, setUsername, username}: props) {
   return (
     <EnterSheet>
       <EnterCardDiv variant="outlined" >
         <Typography variant="h5" component="div">Как тебя зовут?</Typography>
-        <TextField required id="standard-basic" label="Имя" variant="standard" multiline maxRows={2} value={username} onChange={(e) => {setUsername(e.target.value.slice(0,20))}} />
+        <TextField required id="standard-basic" label="Имя" variant="standard" multiline maxRows={2} value={username.value} onChange={(e) => {dispatch(changeUsername(e.target.value.slice(0,20)))}} />
         <Button variant="contained" sx={{ marginTop: '30px'}} 
-                onClick={() => {username.length !== 0 && setEnteredStatus(true);
+                onClick={() => {username.value.length !== 0 && dispatch(enter(true));
         }}>Войти в чат</Button>
       </EnterCardDiv >
     </EnterSheet>

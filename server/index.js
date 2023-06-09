@@ -14,7 +14,6 @@ const pool = new Pool({
 });
 
 
-
 const server = require('http').createServer(app);
 
 const io = require('socket.io')(server, {
@@ -29,7 +28,7 @@ io.on('connection', (socket) => {
         try {
             const sending = await pool.query(`INSERT INTO "chat"."messages" ("text_of_message", "sender_name", "time_of_sending") VALUES ($1, $2, $3)`,
                             [payload.text, payload.name, payload.time]);
-            const response = await pool.query(`SELECT * FROM chat."messages" ORDER BY "id_of_message" DESC`);
+            const response = await pool.query(`SELECT * FROM chat."messages" ORDER BY "id_of_message" DESC LIMIT 100`);
             io.emit('chat', response.rows);
             
         } catch (err) {
@@ -38,7 +37,7 @@ io.on('connection', (socket) => {
     })
     socket.on('first', async (payload) => {
         try {
-            const response = await pool.query(`SELECT * FROM chat."messages" ORDER BY "id_of_message" DESC`);
+            const response = await pool.query(`SELECT * FROM chat."messages" ORDER BY "id_of_message" DESC LIMIT 100`);
             io.emit('first', response.rows);
             
         } catch (err) {
