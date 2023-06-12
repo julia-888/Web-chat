@@ -1,10 +1,10 @@
-// import { IMessages } from './../components/Chat';
+// import { IMessage } from './../components/Chat';
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IMessages } from "../components/Chat";
+import { IMessage } from "../components/Chat";
 
 //Интерфейс типов данных
 export interface MessagesState {
-  value: IMessages[];
+  value: IMessage[];
 }
 
 const initialState: MessagesState = {
@@ -15,7 +15,7 @@ export const messagesSlice = createSlice({
     name: 'messages',
     initialState,
     reducers: {
-      loadMessages: (state, action: PayloadAction<IMessages[]>) => {
+      loadMessages: (state, action: PayloadAction<IMessage[]>) => {
         state.value = action.payload; // добавление переданного сообщения в список с сообщениями
       },
     },

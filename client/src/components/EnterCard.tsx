@@ -20,14 +20,14 @@ export default function EnterCard() {
         <Typography variant="h5" component="div">Как тебя зовут?</Typography>
         <TextField required id="standard-basic" label="Имя" variant="standard" multiline maxRows={2} value={username.value} onChange={(e) => {dispatch(changeUsername(e.target.value.slice(0,20)))}} />
         <Button variant="contained" sx={{ marginTop: '30px'}} 
-                onClick={() => {username.value.length !== 0 && dispatch(enter(true));
-        }}>Войти в чат</Button>
+                onClick={() => {username.value.length !== 0 && dispatch(enter(true));}}>
+        Войти в чат</Button>
       </EnterCardDiv >
     </EnterSheet>
   );
 }
 
-const EnterSheet = styled(Sheet)({
+const EnterSheet = styled(Sheet)({ //обёртка-страница
   width: '98vw',
   height: '96vh',
   display: 'flex',
@@ -36,7 +36,7 @@ const EnterSheet = styled(Sheet)({
   alignItems: 'center'
 });
 
-const EnterCardDiv = styled(Card) ({
+const EnterCardDiv = styled(Card) ({ //карточка для ввода имени
   width: 300,
   textAlign: 'center', 
   border: 'solid black 1px', 
