@@ -11,6 +11,8 @@ import { styled } from '@mui/material/styles';
 import { loadMessages } from '../redux-features/messagesSlice';
 import { enter, changeUsername } from '../redux-features/usernameSlice';
 import {io} from 'socket.io-client';
+import { groupDataForStore } from '../groupDataForStore';
+
 
 // структура сообщения
 export interface IMessage {
@@ -18,6 +20,7 @@ export interface IMessage {
   text_of_message: string,
   sender_name: string,
   time_of_sending: string,
+  date_of_sending: string,
 }
 
 const socket = io(`ws://localhost:5000`, { transports: ["websocket"] });
@@ -40,24 +43,28 @@ export default function Chat() {
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
     const s = String(now.getSeconds()).padStart(2, '0');
+    const date = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth()).padStart(2, '0');
+    const year = String(now.getFullYear());
     const currentTime = h + ':' + m + ':' + s; //зафиксировать время отправки
-    socket.emit('sendMessage', {name: username, text: msgText, time: currentTime});
+    const currentDate = date + '.' + month + '.' + year; //Зафиксировать дату
+    socket.emit('sendMessage', {name: username, text: msgText, time: currentTime, date: currentDate});
     setMsgText(''); //обнулить содержимое текстового поля
   }
 
   useEffect(() => {
     //Обработка ответов от сервера
-    socket.on("sendMessage", (payload: IMessage[]) => {
-      dispatch(loadMessages(payload));      
+    socket.on("sendMessage", (data: IMessage[]) => {
+      dispatch(loadMessages(groupDataForStore(data)));      
     });
-    socket.on("enter", (payload: IMessage[]) => {
-      dispatch(loadMessages(payload));
+    socket.on("enter", (data: IMessage[]) => {
+      dispatch(loadMessages(groupDataForStore(data)));
     });
   })
 
   useEffect(() => {
     //при входе в чат запрашивается история сообщений
-    socket.emit('enter', "payload");
+    socket.emit('enter', "data");
 
     //происходит автоскролл в конец истории сообщений
     scrollRef.current.scrollIntoView({block: 'start'});
@@ -73,28 +80,35 @@ export default function Chat() {
       }}>Назад</BackButton>
       <ChatMessages id="msgFrame">
         <List sx={{display: 'flex', flexDirection: 'column-reverse'}}>
-          { //отображение сообщений: если сообщение написал данный пользователь, то оно отображается слева и без имени
-            messages.map( (message) => {
-              return(
-                username == message.sender_name ?
-                (<ListItem sx={{justifyContent: 'flex-end', textAlign: 'right'}}>
-                  <div>
-                    <div>
-                      <MessageChip label={message.text_of_message} />
-                    </div>
-                    <label style={{fontSize: '10px', marginRight: '8px'}}>{message.time_of_sending}</label>
-                  </div>
-                </ListItem>
-                ): (
-                <ListItem>
-                  <div>
-                    <div>
-                      <MessageChip label={message.text_of_message} />
-                    </div>
-                    <label style={{fontSize: '10px', marginLeft: '10px'}}>{message.sender_name + " " + message.time_of_sending}</label>
-                  </div>
-                </ListItem> ))
-          })}
+          {
+            messages.map(dateCluster => {
+              return (
+                <div>
+                <div style={{border: 'solid 1px', textAlign: 'center'}}>{dateCluster.date}</div>
+                {dateCluster.messages.map((message) => {
+                  return (username == message.sender_name ?
+                    (<ListItem sx={{justifyContent: 'flex-end', textAlign: 'right'}}>
+                      <div>
+                        <div>
+                          <MessageChip label={message.text_of_message} />
+                        </div>
+                        <label style={{fontSize: '10px', marginRight: '8px'}}>{message.time_of_sending}</label>
+                      </div>
+                    </ListItem>
+                    ): (
+                    <ListItem>
+                      <div>
+                        <div>
+                          <MessageChip label={message.text_of_message} />
+                        </div>
+                        <label style={{fontSize: '10px', marginLeft: '10px'}}>{message.sender_name + " " + message.time_of_sending}</label>
+                      </div>
+                    </ListItem> )
+                )})}
+                </div>
+              )
+            })
+          }
         </List>
         <div ref={scrollRef} style={{height: '10px'}} /> {/* пустой элемент, созданный ради автопрокрутки в конец */}
       </ChatMessages>

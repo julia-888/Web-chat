@@ -4,7 +4,7 @@ import { IMessage } from "../components/Chat";
 
 //Интерфейс типов данных
 export interface MessagesState {
-  value: IMessage[];
+  value: {date: string, messages: IMessage[]}[];
 }
 
 const initialState: MessagesState = {
@@ -15,7 +15,7 @@ export const messagesSlice = createSlice({
     name: 'messages',
     initialState,
     reducers: {
-      loadMessages: (state, action: PayloadAction<IMessage[]>) => {
+      loadMessages: (state, action: PayloadAction<{date: string, messages: IMessage[]}[]>) => {
         state.value = action.payload; // добавление переданного сообщения в список с сообщениями
       },
     },

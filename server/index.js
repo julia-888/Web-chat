@@ -25,10 +25,10 @@ const io = require('socket.io')(server, {
 
 io.on('connection', (socket) => {
     //обработка запроса на отправку сообщения
-    socket.on('sendMessage', async (payload) => {
+    socket.on('sendMessage', async (data) => {
         try {
-            const sending = await pool.query(`INSERT INTO "chat"."messages" ("text_of_message", "sender_name", "time_of_sending") VALUES ($1, $2, $3)`,
-                            [payload.text, payload.name, payload.time]);
+            const sending = await pool.query(`INSERT INTO "chat"."messages" ("text_of_message", "sender_name", "time_of_sending", "date_of_sending") VALUES ($1, $2, $3, $4)`,
+                            [data.text, data.name, data.time, data.date]);
             const response = await pool.query(`SELECT * FROM chat."messages" ORDER BY "id_of_message" DESC LIMIT 100`);
             io.emit('sendMessage', response.rows);
             
@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
         }
     })
     //обработка запроса на вход
-    socket.on('enter', async (payload) => {
+    socket.on('enter', async (data) => {
         try {
             const response = await pool.query(`SELECT * FROM chat."messages" ORDER BY "id_of_message" DESC LIMIT 100`);
             io.emit('enter', response.rows);
