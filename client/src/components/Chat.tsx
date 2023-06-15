@@ -4,14 +4,14 @@ import ReactDOM from 'react-dom/client';
 import TextField from '@mui/material/TextField';
 import { Sheet } from '@mui/joy';
 import Card from '@mui/material/Card';
-import { Button, Chip, List, ListItem, ListItemText } from '@mui/material';
+import { Button, Chip, Divider, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from '../redux-features/hooks';
 import { styled } from '@mui/material/styles';
 import { loadMessages } from '../redux-features/messagesSlice';
 import { enter, changeUsername } from '../redux-features/usernameSlice';
 import {io} from 'socket.io-client';
-import { groupDataForStore } from '../groupDataForStore';
+import { groupDataForStore } from '../functions/groupDataForStore';
 
 
 // структура сообщения
@@ -84,7 +84,9 @@ export default function Chat() {
             messages.map(dateCluster => {
               return (
                 <div>
-                <div style={{border: 'solid 1px', textAlign: 'center'}}>{dateCluster.date}</div>
+                  <Divider  />
+                <DateTitle variant='h6'>{dateCluster.date}</DateTitle>
+                {/* <div style={{border: 'solid 1px', textAlign: 'center'}}>{dateCluster.date}</div> */}
                 {dateCluster.messages.map((message) => {
                   return (username == message.sender_name ?
                     (<ListItem sx={{justifyContent: 'flex-end', textAlign: 'right'}}>
@@ -92,7 +94,7 @@ export default function Chat() {
                         <div>
                           <MessageChip label={message.text_of_message} />
                         </div>
-                        <label style={{fontSize: '10px', marginRight: '8px'}}>{message.time_of_sending}</label>
+                        <MessageLabel>{message.time_of_sending}</MessageLabel>
                       </div>
                     </ListItem>
                     ): (
@@ -101,7 +103,7 @@ export default function Chat() {
                         <div>
                           <MessageChip label={message.text_of_message} />
                         </div>
-                        <label style={{fontSize: '10px', marginLeft: '10px'}}>{message.sender_name + " " + message.time_of_sending}</label>
+                        <MessageLabel>{message.sender_name + " " + message.time_of_sending}</MessageLabel>
                       </div>
                     </ListItem> )
                 )})}
@@ -170,4 +172,14 @@ const ChatInput = styled(TextField)({ // поле ввода
 
 const ChatButton = styled(Button)({ //кнопка "Отправить"
   marginLeft: '20px',
+})
+
+const DateTitle = styled(Typography) ({
+  margin: '10px',
+  textAlign: 'center',
+})
+
+const MessageLabel = styled(Typography) ({
+  fontSize: '10px',
+  margin: '8px',
 })

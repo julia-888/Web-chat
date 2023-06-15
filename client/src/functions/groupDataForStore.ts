@@ -1,4 +1,4 @@
-import { IMessage } from "./components/Chat";
+import { IMessage } from "../components/Chat";
 
 //функция разделения сообщений на "кластеры" по датам
 
