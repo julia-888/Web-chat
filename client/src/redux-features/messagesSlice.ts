@@ -15,7 +15,7 @@ export const messagesSlice = createSlice({
     name: 'messages',
     initialState,
     reducers: {
-      loadMessages: (state, action: PayloadAction<{date: string, messages: IMessage[]}[]>) => {
+      loadMessages: (state:any, action: PayloadAction<{date: string, messages: IMessage[]}[]>) => {
         state.value = action.payload; // добавление переданного сообщения в список с сообщениями
       },
     },

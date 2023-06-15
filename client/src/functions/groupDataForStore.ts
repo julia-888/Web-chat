@@ -16,5 +16,7 @@ export function groupDataForStore(data: IMessage[]) {
         messagesForCluster.push(data[i]);
     }
 
+    dataForStore.push({date: data[99].date_of_sending, messages: messagesForCluster.reverse()});
+
     return dataForStore;
 }

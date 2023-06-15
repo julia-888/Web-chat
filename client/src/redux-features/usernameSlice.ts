@@ -17,7 +17,7 @@ export const usernameSlice = createSlice({
     name: 'username',
     initialState,
     reducers: {
-      changeUsername: (state, action: PayloadAction<string>) => {
+      changeUsername: (state:any, action: PayloadAction<string>) => {
         state.value = action.payload; //присвоение переданного значения имени пользователя
       },
       enter: (state, action: PayloadAction<boolean>) => {

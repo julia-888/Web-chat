@@ -32,6 +32,7 @@ export default function Chat() {
   const enteredStatus = useAppSelector(state => state.username.enteredStatus);
   const dispatch = useAppDispatch();
 
+  const scrollRef = useRef<any>(0);
 
   //объект с текущей датой и временем
   const now = new Date();
@@ -44,7 +45,7 @@ export default function Chat() {
     const m = String(now.getMinutes()).padStart(2, '0');
     const s = String(now.getSeconds()).padStart(2, '0');
     const date = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth()).padStart(2, '0');
+    const month = String(now.getMonth()+1).padStart(2, '0');
     const year = String(now.getFullYear());
     const currentTime = h + ':' + m + ':' + s; //зафиксировать время отправки
     const currentDate = date + '.' + month + '.' + year; //Зафиксировать дату
@@ -67,10 +68,8 @@ export default function Chat() {
     socket.emit('enter', "data");
 
     //происходит автоскролл в конец истории сообщений
-    scrollRef.current.scrollIntoView({block: 'start'});
+    scrollRef.current.scrollIntoView({block: 'end'});
   }, [enteredStatus])
-  
-  const scrollRef = useRef<any>(null);
 
   return (
     <ChatSheet>
@@ -86,7 +85,6 @@ export default function Chat() {
                 <div>
                   <Divider  />
                 <DateTitle variant='h6'>{dateCluster.date}</DateTitle>
-                {/* <div style={{border: 'solid 1px', textAlign: 'center'}}>{dateCluster.date}</div> */}
                 {dateCluster.messages.map((message) => {
                   return (username == message.sender_name ?
                     (<ListItem sx={{justifyContent: 'flex-end', textAlign: 'right'}}>
