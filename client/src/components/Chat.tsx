@@ -1,12 +1,11 @@
 /* Страница с чатом */
 
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import TextField from '@mui/material/TextField';
 import { Sheet } from '@mui/joy';
 import Card from '@mui/material/Card';
 import { Button, Chip, List, ListItem, ListItemText } from '@mui/material';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from '../redux-features/hooks';
 import { styled } from '@mui/material/styles';
 import { loadMessages } from '../redux-features/messagesSlice';
@@ -59,8 +58,12 @@ export default function Chat() {
   useEffect(() => {
     //при входе в чат запрашивается история сообщений
     socket.emit('enter', "payload");
+
+    //происходит автоскролл в конец истории сообщений
+    scrollRef.current.scrollIntoView({block: 'start'});
   }, [enteredStatus])
   
+  const scrollRef = useRef<any>(null);
 
   return (
     <ChatSheet>
@@ -93,6 +96,7 @@ export default function Chat() {
                 </ListItem> ))
           })}
         </List>
+        <div ref={scrollRef} style={{height: '10px'}} /> {/* пустой элемент, созданный ради автопрокрутки в конец */}
       </ChatMessages>
       <ChatItems>
         <ChatInput multiline maxRows={3} value={msgText} onChange={(e) => {setMsgText(e.target.value)}}></ChatInput>
